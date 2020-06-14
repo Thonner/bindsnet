@@ -131,6 +131,67 @@ def poisson(datum: torch.Tensor, time: int, dt: float = 1.0, **kwargs) -> torch.
     return spikes.view(time, *shape)
 
 
+def rate(datum: torch.Tensor, time: int, dt: float = 1.0, **kwargs) -> torch.Tensor:
+    """
+    Direct rate based incoding
+    """
+    assert (datum >= 0).all(), "Inputs must be non-negative"
+
+    # Get shape and size of data.
+    shape, size = datum.shape, datum.numel()
+    datum = datum.flatten()
+    time = int(time / dt)
+
+    # Compute firing rates in seconds as function of data intensity,
+    # accounting for simulation time step.
+    rate = torch.zeros(size)
+    rate[datum != 0] = 1 / datum[datum != 0] * (1000 / dt)
+    
+    timeRates = torch.ones(time+1, size)
+    for i in range(time+1):
+        timeRates[i] = rate
+        
+    # Calculate spike times by cumulatively summing over time dimension.
+    times = torch.cumsum(timeRates, dim=0).long()
+    times[times >= time + 1] = 0
+
+    # Create tensor of spikes.
+    spikes = torch.zeros(time + 1, size).byte()
+    spikes[times, torch.arange(size)] = 1
+    spikes = spikes[1:]
+
+    return spikes.view(time, *shape)
+"""
+    # Create tensor of spikes.
+    spikes = torch.zeros(time + 1, size).byte()
+    for i in range(size):
+        for j in range(time+1):
+            if (rate[i].item() != 0.0):
+                if (rate[i].item() > 1000):
+                    spikes[j,i] = 1
+                elif (j%(1000//rate[i].item())==0):
+                    spikes[j,i] = 1
+    spikes = spikes[1:]
+"""
+
+def ratePeriod(datum: torch.Tensor, time: int, dt: float = 1.0, **kwargs) -> torch.Tensor:
+    """
+    Direct rate based incoding
+    """
+    assert (datum >= 0).all(), "Inputs must be non-negative"
+
+    # Get shape and size of data.
+    shape, size = datum.shape, datum.numel()
+    datum = datum.flatten()
+    time = int(time / dt)
+
+    # Compute firing rates in seconds as function of data intensity,
+    # accounting for simulation time step.
+    rate = torch.zeros(size)
+    rate[datum != 0] = 1 / datum[datum != 0] * (1000 / dt)
+    
+    return torch.clamp(rate.round(), min=0, max=time)
+
 def rank_order(
     datum: torch.Tensor, time: int, dt: float = 1.0, **kwargs
 ) -> torch.Tensor:

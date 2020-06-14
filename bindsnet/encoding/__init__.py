@@ -1,4 +1,4 @@
-from .encodings import single, repeat, bernoulli, poisson, rank_order
+from .encodings import single, repeat, bernoulli, poisson, rate, ratePeriod, rank_order
 from .loaders import bernoulli_loader, poisson_loader, rank_order_loader
 from .encoders import (
     Encoder,
@@ -7,5 +7,7 @@ from .encoders import (
     RepeatEncoder,
     BernoulliEncoder,
     PoissonEncoder,
+    RateEncoder,
+    RatePeriod,
     RankOrderEncoder,
 )
