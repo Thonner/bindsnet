@@ -239,7 +239,7 @@ parser.add_argument("--test", dest="train", action="store_false")
 parser.add_argument("--plot", dest="plot", action="store_true")
 parser.add_argument("--run_only", dest="run_only", action="store_true")
 parser.add_argument("--gpu", dest="gpu", action="store_true")
-parser.set_defaults(plot=False, gpu=False, train=True, , run_only = True)
+parser.set_defaults(plot=False, gpu=False, train=True, run_only = True)
 
 args = parser.parse_args()
 
