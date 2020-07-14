@@ -67,10 +67,10 @@ hit = 0
 confusion = []
 for i in range(10):
     confusion.append([0,0,0,0,0,0,0,0,0,0])
-ser = serial.Serial('/dev/ttyUSB0', 115200, stopbits=1, timeout=1)
+ser = serial.Serial('/dev/ttyUSB1', 115200, stopbits=1, timeout=0.5)
 pbar = tqdm(enumerate(dataloader))
 for (i, datum) in pbar:
-    if i > 499:
+    if i > 1000:
         break
 
     image = datum["encoded_image"]
@@ -115,7 +115,7 @@ for (i, datum) in pbar:
     print(output)
 
 ser.close()
-acc = hit/500
+acc = hit/1000
 print("\n accuacy: " + str(acc) +"\n")
 print("confusion:")
 for i in range(10):
